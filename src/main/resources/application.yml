@@ -2,13 +2,20 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/db
+    url: jdbc:mysql://localhost:3306/db06
     username: root
     password: 123456
+
   servlet:
     multipart:
       max-file-size: 10MB
-
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      #username=user
+      #password=secret
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
@@ -20,3 +27,4 @@ mybatis-plus:
 my-config:
   file:
     path: D:/resource/
+

@@ -3,15 +3,16 @@ package com.example.entity;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * 地址簿
  */
 @Data
-public class AddressBook {
+public class AddressBook implements Serializable {
 
-
+    private static final long serialVersionUID = 1L;
 
     private Long id;
 

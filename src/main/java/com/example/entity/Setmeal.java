@@ -2,6 +2,8 @@ package com.example.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -9,7 +11,9 @@ import java.time.LocalDateTime;
  * 套餐实体类
  */
 @Data
-public class Setmeal {
+public class Setmeal implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @TableId(type = IdType.AUTO)
     private Long id;

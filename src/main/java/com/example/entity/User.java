@@ -2,15 +2,17 @@ package com.example.entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 用户信息
  */
 @Data
-public class User {
+public class User implements Serializable {
 
+    private static final long serialVersionUID = 1L;
 
     private Long id;
-
 
     //姓名
     private String name;

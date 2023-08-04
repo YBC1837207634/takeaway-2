@@ -8,11 +8,14 @@ import com.example.utils.VerificationCode;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @Slf4j
@@ -21,9 +24,16 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
+    /**
+     * reids 缓存短信验证码
+     * @param user
+     * @return
+     */
     @GetMapping("/sendMsg")
-    public Result<String> sendMsg(@RequestBody User user, HttpSession session) {
+    public Result<String> sendMsg(@RequestBody User user) {
         String phone = user.getPhone();
         if (StringUtils.hasText(phone)) {
             String code = VerificationCode.verification(4);
@@ -32,7 +42,8 @@ public class UserController {
 
             // 记录手机与验证码
 //            HttpSession session = request.getSession();
-            session.setAttribute(phone, code);
+//            session.setAttribute(phone, code);
+            stringRedisTemplate.opsForValue().set(phone, code, 5, TimeUnit.MINUTES);   // 5分钟有效期
             return Result.success("验证码发送成功");
         }
 
@@ -42,20 +53,19 @@ public class UserController {
     /**
      * 登陆密钥 utoken
      * @param map
-     * @param session
      * @return
      */
     @PostMapping("/login")
-    public Result<String> login(@RequestBody Map<String, String> map, HttpSession session) {
+    public Result<String> login(@RequestBody Map<String, String> map) {
         String phone = map.get("phone");
         String code = map.get("code");
         if (StringUtils.hasText(phone) && StringUtils.hasText(code)) {
-            String c = (String) session.getAttribute(phone);
+            String c = stringRedisTemplate.opsForValue().get(phone);  // 从 redis 中获取验证码
             if (!StringUtils.hasLength(c)) return Result.error("验证码无效");
             // 验证码正确
             if (c.equals(code)) {
-                // 清除 session 中保存的 phone
-                session.removeAttribute(phone);
+                // 清除 redis 中保存的 phone
+                stringRedisTemplate.delete(phone);
                 // 注册，如果已经注册过则返回用户信息
                 User u = new User();
                 u.setPhone(phone);

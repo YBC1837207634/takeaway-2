@@ -6,12 +6,16 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
 @Data
-public class Dish {
+public class Dish implements Serializable {
+
+    private static final Long serialVersionUID = 1L;
 
     @TableId(type = IdType.AUTO)
     private Long id;
