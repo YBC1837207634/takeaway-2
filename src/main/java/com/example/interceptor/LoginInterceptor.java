@@ -21,17 +21,24 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader("token");
+        // 用户可以访问员工的特定接口
+        if (!StringUtils.hasText(token)) {
+            token = request.getHeader("utoken");
+            if (!request.getMethod().equals("GET")) {
+                response.getWriter().println(JSON.toJSONString(Result.error("Beyond permissions！")));  // 用户只可以使用 get 请求
+                return false;
+            }
+        }
         // 员工登陆
-        if (StringUtils.hasText(token)) {
-            try {
+        try {
                 Claims claims = JWTUtil.parser(token);
                 Integer i = (Integer) claims.get("id");
                 BaseContext.getThreadLocal().set(i.longValue());
                 return true;
             } catch (Exception e) {
-                e.printStackTrace();
-            }
+//                    e.printStackTrace();
         }
+
         response.getWriter().println(JSON.toJSONString(Result.error("not login")));
         return false;
     }

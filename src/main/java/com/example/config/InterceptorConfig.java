@@ -32,6 +32,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 "/user/login",
                 "/user/sendMsg"
         );
+
     }
 
 }

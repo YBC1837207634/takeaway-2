@@ -1,12 +1,10 @@
 package com.example.controller;
 
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.common.Result;
 import com.example.dto.SetmealDto;
 import com.example.entity.Category;
-import com.example.entity.Dish;
 import com.example.entity.Setmeal;
 import com.example.entity.SetmealDish;
 import com.example.service.CategoryService;
@@ -14,6 +12,7 @@ import com.example.service.SetmealDishService;
 import com.example.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -79,6 +78,10 @@ public class SetmalController {
     }
 
     @GetMapping
+    @Cacheable(
+        cacheNames = "setmeal_cache",
+        key = " 'setmeal_' + #setmeal.categoryId + #setmeal.status"
+    )
     public Result<List<SetmealDto>> list(Setmeal setmeal) {
 
         // 查询套餐

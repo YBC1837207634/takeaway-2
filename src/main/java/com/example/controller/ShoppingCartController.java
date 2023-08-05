@@ -2,7 +2,6 @@ package com.example.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.example.common.BaseContext;
 import com.example.common.Result;
 import com.example.entity.ShoppingCart;

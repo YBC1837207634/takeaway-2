@@ -6,7 +6,6 @@ import com.example.exception.CommonException;
 import com.example.exception.DeleteException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import java.io.FileNotFoundException;
 import java.sql.SQLIntegrityConstraintViolationException;
 

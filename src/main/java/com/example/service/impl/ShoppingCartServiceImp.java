@@ -2,7 +2,6 @@ package com.example.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.common.Result;
 import com.example.entity.ShoppingCart;
 import com.example.exception.CommonException;
 import com.example.mapper.ShoppingCartMapper;
