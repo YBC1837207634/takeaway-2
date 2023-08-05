@@ -12,9 +12,9 @@ import com.example.service.SetmealDishService;
 import com.example.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -63,13 +63,6 @@ public class SetmalController {
             if (result != null) {
                 setmealDto.setCategoryName(result.getName());
             }
-//            LambdaQueryWrapper<SetmealDish> wp = new LambdaQueryWrapper<>();
-//            wp.eq(SetmealDish::getSetmealId, item.getId());
-//            List<SetmealDish> list = setmealDishService.list(wp);
-//            // 携带菜品列表
-//            setmealDto.setDishes(list);
-            // 携带套餐名称
-
             return setmealDto;
         }).toList();
 
@@ -79,8 +72,9 @@ public class SetmalController {
 
     @GetMapping
     @Cacheable(
-        cacheNames = "setmeal_cache",
-        key = " 'setmeal_' + #setmeal.categoryId + #setmeal.status"
+        cacheNames = "setmealCache",
+        key = "'setmeal_' + #setmeal.categoryId + #setmeal.status",
+        unless = "#result.data.isEmpty()"
     )
     public Result<List<SetmealDto>> list(Setmeal setmeal) {
 
@@ -88,6 +82,7 @@ public class SetmalController {
         LambdaQueryWrapper<Setmeal> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(setmeal.getStatus()!=null, Setmeal::getStatus, setmeal.getStatus());
         wrapper.eq(setmeal.getCategoryId()!=null,Setmeal::getCategoryId, setmeal.getCategoryId());
+        wrapper.eq(setmeal.getStatus()!=null, Setmeal::getStatus, setmeal.getStatus());   // 状态
         List<Setmeal> list = setmealService.list(wrapper);
 
         // 携带菜品
@@ -113,13 +108,23 @@ public class SetmalController {
         return Result.success(r);
     }
 
+    /**
+     * @param setmealDto
+     * @return
+     */
     @PostMapping
     public Result<String> save(@RequestBody SetmealDto setmealDto) {
         if (setmealService.saveSetmeal(setmealDto)) return Result.success("添加成功！");
         return Result.error("添加失败！");
     }
 
+    /**
+     * 删除操作清理缓存
+     * @param ids
+     * @return
+     */
     @DeleteMapping
+    @CacheEvict(cacheNames = "setmealCache", key = "'setmeal_' + #setmeal.categoryId + #setmeal.status")
     public Result<String> delete(@RequestParam List<Long> ids) {
         if (setmealService.deleteSetmealByIds(ids))
             return Result.success("删除成功");

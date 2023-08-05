@@ -77,7 +77,8 @@ public class DishController {
             return dishDto;
         }).toList();
         // 缓存到 redis
-        redisTemplate.opsForValue().set(key, dishDtos, 60, TimeUnit.MINUTES);   // 60 分钟
+        if (!list.isEmpty())
+            redisTemplate.opsForValue().set(key, dishDtos, 60, TimeUnit.MINUTES);   // 60 分钟
         return Result.success(dishDtos);
     }
 
