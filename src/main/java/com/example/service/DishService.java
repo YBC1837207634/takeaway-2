@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.dto.DishDto;
 import com.example.entity.Dish;
 
+import java.util.List;
+
 
 public interface DishService extends IService<Dish> {
 
@@ -17,4 +19,6 @@ public interface DishService extends IService<Dish> {
 
 
     boolean updateDish(DishDto ds);
+
+    boolean deleteDishByIds(List<Long> ids);
 }

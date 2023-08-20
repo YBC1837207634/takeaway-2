@@ -92,5 +92,27 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
     }
 
+    /**
+     *
+     * 批量删除菜品，包括菜品所对应的口味
+     * @param ids
+     * @return
+     */
+    @Override
+    @Transactional
+    public boolean deleteDishByIds(List<Long> ids) {
+        boolean b = this.removeByIds(ids);
+        if (b) {
+            LambdaQueryWrapper<DishFlavor> wrapper = new LambdaQueryWrapper<>();
+            for (long i : ids) {
+                wrapper.eq(DishFlavor::getDishId, i);
+                dishFlavorService.remove(wrapper);
+                wrapper.clear();
+            }
+            return true;
+        }
+        return false;
+    }
+
 
 }

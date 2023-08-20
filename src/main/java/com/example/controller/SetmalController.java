@@ -41,7 +41,9 @@ public class SetmalController {
      * @param name
      * @return
      */
+    // 在方法执行前查看是否有缓存对应的数据，如果有直接返回数据，如果没有调用方法获取数据返回，并缓存起来。
     @GetMapping("/page")
+    @Cacheable(value = "setmealCache", key = "'setmeal_' + #page + '_' + #limit", unless = "#result.data.isEmpty()")
     public Result<Page<SetmealDto>> page(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer limit, String name) {
@@ -113,6 +115,7 @@ public class SetmalController {
      * @return
      */
     @PostMapping
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result<String> save(@RequestBody SetmealDto setmealDto) {
         if (setmealService.saveSetmeal(setmealDto)) return Result.success("添加成功！");
         return Result.error("添加失败！");
@@ -124,7 +127,7 @@ public class SetmalController {
      * @return
      */
     @DeleteMapping
-    @CacheEvict(cacheNames = "setmealCache", key = "'setmeal_' + #setmeal.categoryId + #setmeal.status")
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)  // 清理 setmealCache 下的所有缓存数据
     public Result<String> delete(@RequestParam List<Long> ids) {
         if (setmealService.deleteSetmealByIds(ids))
             return Result.success("删除成功");
