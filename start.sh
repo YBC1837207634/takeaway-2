@@ -6,13 +6,16 @@ if [ ${pid} ]; then
      echo "shutting down~~~~~~"
      kill -15 $pid
      sleep 3s   # wait 3s
+     if [ $pid ]; then
+     	kill -15 $pid
+     fi
      echo "closed~~~"
 else 
      echo "closed"
 fi
 
 echo pull~~~~
-git pull
+git pull origin master
 echo pull over!
 
 mvn clean package -Dmaven.test.skip=true
