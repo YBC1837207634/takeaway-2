@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
@@ -41,8 +42,12 @@ public class DishController {
     @PostMapping
     public Result<String> save(@RequestBody DishDto dishDto) {
         boolean b = dishService.saveDish(dishDto);
-        if (!b) return Result.error("菜品添加失败！");
-        return Result.success("菜品添加成功！");
+        if(b) {
+            Set keys = redisTemplate.keys("Dish*");
+            redisTemplate.delete(keys);
+            return Result.success("菜品添加成功！");
+        }
+        return Result.error("菜品添加失败！");
     }
 
     /**
@@ -53,7 +58,7 @@ public class DishController {
      */
     @GetMapping
     public Result<List<DishDto>> list(Dish dish) {
-        String key = "dish_categoryId_" + dish.getCategoryId();
+        String key = "Dish::dish_categoryId_" + dish.getCategoryId();
         List<DishDto> dishDtos = (List<DishDto>) redisTemplate.opsForValue().get(key);
 
         // 如果 redis 中有缓存 直接返回
@@ -130,11 +135,23 @@ public class DishController {
     public Result<String> update(@RequestBody DishDto dishDto) {
         boolean b = dishService.updateDish(dishDto);
         if (b) {
-            String key = "dish_categoryId_" + dishDto.getCategoryId();
-            redisTemplate.delete(key);
+            Set keys = redisTemplate.keys("Dish*");
+            redisTemplate.delete(keys);
             return Result.success("菜品修改成功！") ;
         }
         return Result.error("菜品修改失败！");
+    }
+
+    @DeleteMapping
+    public Result<String> delete(@RequestParam List<Long> ids) {
+
+        boolean b = dishService.deleteDishByIds(ids);
+        if (b) {
+            Set keys = redisTemplate.keys("Dish*");
+            redisTemplate.delete(keys);
+            return Result.success("删除成功");
+        }
+        return Result.error("删除失败！");
     }
 
 }
