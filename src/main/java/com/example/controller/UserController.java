@@ -79,9 +79,4 @@ public class UserController {
         return Result.error("验证码错误！");
     }
 
-
-    @GetMapping("/test")
-    public Result<String> test() {
-        return null;
-    }
 }
