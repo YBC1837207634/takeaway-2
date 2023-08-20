@@ -39,7 +39,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 //                    e.printStackTrace();
         }
 
-        response.getWriter().println(JSON.toJSONString(Result.error("not login")));
+        response.getWriter().println(JSON.toJSONString(Result.error("NOT_LOGIN")));
         return false;
     }
 

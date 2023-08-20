@@ -25,7 +25,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         LambdaQueryWrapper<Employee> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Employee::getUsername, employee.getUsername());
         Employee result = emp.selectOne(wrapper);
-        if (result.getStatus() == 0) return -1;
+        if (result == null && result.getStatus() == 0) return -1;
         String password = DigestUtils.md5DigestAsHex(employee.getPassword().getBytes());
         if (result.getUsername() != null && result.getPassword().equals(password)) {
             return result.getId();
